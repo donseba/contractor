@@ -9,7 +9,7 @@ contractor (for golang)
 
 Based on the selected version (In the URL or the Header, whatever you like) we retrieve an map of structs. We now can select the actual struct we need, set some values and finally send it back to the screen OR send it over to the DB (In my case gorp). 
 
-> Still working on a description :) 
+> Still working on a proper description :) 
 
 
 ### Getting started
