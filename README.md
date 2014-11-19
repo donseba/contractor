@@ -75,11 +75,20 @@ To get the output you can use the following :
 fmt.Printf( "%+v\n", Struct1.Case ) // This will become unavailable over time.
 fmt.Printf( "%+v\n", Struct1.Get() )
 ```
+resulting in :
+```console 
+&{Field1:valField1 Field2:valField2}
+```
+
+
 Or you could convert it to json : 
 ```go
 json_msg, _ := json.Marshal(Struct1.Get())
 fmt.Fprintf(w, "%s", json_msg)
 ```
-
+resulting in :
+```json
+{"Field1":"valField1","Field2":"valField2"}
+```
 
 
