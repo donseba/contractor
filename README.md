@@ -1,18 +1,16 @@
 contractor (for golang)
 ==========
 [![GoDoc](https://godoc.org/github.com/donseba/contractor?status.svg)](https://godoc.org/github.com/donseba/contractor)
+[![License](https://poser.pugx.org/leaphly/cart-bundle/license.svg)](https://raw.githubusercontent.com/donseba/contractor/master/LICENSE)
 
 Contractor basically allows you to dinamically manipulate struct. I have made this package because I could have different versions of the same struct (Just like of API Versions) . An newer version of the struct could have more or sell fields.
 
 
-
-Getting started
-==========
+### Getting started
 First of all install the package with go get  `"go get github.com/donseba/contractor"`
 Add it to your imports where you want to use it. 
 
-Structured Struct Layout 
-==========
+### Structured Struct Layout 
 Basically we are going to store an reference to the struct in an `map[string]map[string]interface{}` ..say wut?
 
 And it would look like something like this : 
@@ -36,8 +34,7 @@ The second level is the most tricky parts.
 
 **values** The values contain the struct reference.
 
-Usage
-======
+### Usage
 ```go
 // Get the set of contracts which hold a map of structs assigned to version 01
 contractSet := contractor.NewContract(models.TestContracts["01"])
@@ -69,8 +66,7 @@ type Struct1 struct {
 }
 ```
 
-Output
-======
+### Output
 To get the output you can use the following : 
 ```go
 //Read from the Struct (for now 2 ways to do this..)
@@ -93,4 +89,7 @@ resulting in :
 {"Field1":"valField1","Field2":"valField2"}
 ```
 
+### License
+
+This package is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
 
