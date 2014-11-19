@@ -1,5 +1,7 @@
 contractor (for golang)
 ==========
+[![GoDoc](https://godoc.org/github.com/donseba/contractor?status.svg)](https://godoc.org/github.com/donseba/contractor)
+
 Contractor basically allows you to dinamically manipulate struct. I have made this package because I could have different versions of the same struct (Just like of API Versions) . An newer version of the struct could have more or sell fields.
 
 
