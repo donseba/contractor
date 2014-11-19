@@ -5,7 +5,11 @@ contractor (for golang)
 ![Tag](http://img.shields.io/github/tag/donseba/contractor.svg)
 ![Release](http://img.shields.io/github/release/donseba/contractor.svg)
 
-Contractor basically allows you to dynamically manipulate struct. I have made this package because I could have different versions of the same struct (Just like of API Versions) . An newer version of the struct could have more or sell fields.
+`Contractor` allows you to dynamically populate structs. This package was made because I have multiple versions of the same struct. You could compare it to the versions used in API's. ( You end up with multiple versions over years, and sometimes need to support more than one version, migration time for clients...)
+
+Based on the selected version (In the URL or the Header, whatever you like) we retrieve an map of structs. We now can select the actual struct we need, set some values and finally send it back to the screen OR send it over to the DB (In my case gorp). 
+
+> Still working on a description :) 
 
 
 ### Getting started
