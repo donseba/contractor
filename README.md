@@ -3,7 +3,7 @@ contractor (for golang)
 [![GoDoc](https://godoc.org/github.com/donseba/contractor?status.svg)](https://godoc.org/github.com/donseba/contractor)
 [![License](https://poser.pugx.org/leaphly/cart-bundle/license.svg)](https://raw.githubusercontent.com/donseba/contractor/master/LICENSE)
 
-Contractor basically allows you to dinamically manipulate struct. I have made this package because I could have different versions of the same struct (Just like of API Versions) . An newer version of the struct could have more or sell fields.
+Contractor basically allows you to dynamically manipulate struct. I have made this package because I could have different versions of the same struct (Just like of API Versions) . An newer version of the struct could have more or sell fields.
 
 
 ### Getting started
@@ -30,7 +30,7 @@ As you can see, the first level contains the version of the struct.
 
 The second level is the most tricky parts. 
 
-**keys** You always have to make sure all versions contain the same keys. Well it is not mandatory, but since it is so dinamic we have to set some groundrules.
+**keys** You always have to make sure all versions contain the same keys. Well it is not mandatory, but since it is so dynamic we have to set some ground rules.
 
 **values** The values contain the struct reference.
 
@@ -41,10 +41,10 @@ contractSet := contractor.NewContract(models.TestContracts["01"])
 ```
 
 ```go
-// Read the struct and asign it to an value in case we want to send.
+// Read the struct and assign it to an value in case we want to send.
 Struct1, err := contractSet.Read("Struct1")
 if err != nil {
-  // Do your tipical error handling here
+  // Do your typical error handling here
 }
 
 // Create some dummy data like Json.Unmarshal()  
@@ -52,11 +52,11 @@ dummyData := make(map[string]interface{})
 dummyData["Field1"] = "valField1"
 dummyData["Field2"] = "valField2"
 
-// Assing the dummy data to the Struct.
+// Assign the dummy data to the Struct.
 Struct1.Set(dummyData)
 ```
 
-The above example crearly only works if we have an valid `v01.struct1{}` Having 2 fields `Field1` & `Field2`
+The above example clearly only works if we have an valid `v01.struct1{}` Having 2 fields `Field1` & `Field2`
 ```go
 package v01
 
@@ -79,7 +79,7 @@ resulting in :
 ```
 
 
-Or you could convert it to json : 
+Or you could convert it to JSON : 
 ```go
 json_msg, _ := json.Marshal(Struct1.Get())
 fmt.Fprintf(w, "%s", json_msg)
