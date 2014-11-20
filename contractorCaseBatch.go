@@ -10,10 +10,11 @@ type ContractorCaseBatch struct {
 }
 
 func (C ContractorCaseBatch) Get() []interface{} {
-	array := make([]interface{}, len(C.Batch))
+	Len := len(C.Batch)
+	array := make([]interface{}, Len)
 
-	for key, _ := range C.Batch {
-		array[key] = C.Batch[key].Get()
+	for i := 0; i < Len; i++ {
+		array[i] = C.Batch[i].Get()
 	}
 
 	return array

@@ -30,10 +30,9 @@ func (C *Contractor) Batch(contract string, amount int) (*ContractorCaseBatch, e
 
 	array := make([]*ContractorCase, amount)
 
-	for key, _ := range array {
+	for i := 0; i < amount; i++ {
 		Case := C.validateContract(contract)
-
-		array[key] = NewContractorCase(Case)
+		array[i] = NewContractorCase(Case)
 	}
 
 	return NewContractorCaseBatch(array), nil
