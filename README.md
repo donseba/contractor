@@ -106,7 +106,9 @@ type Struct1 struct {
 	Field2        string
 	InnerStruct   struct{
 		SubField1 string
-		SubField2 string
+		SubField2 struct{
+			SubSubField1 string
+		}
 	}
 }
 ```
@@ -124,12 +126,11 @@ dummyData := make(map[string]interface{})
 dummyData["Field1"] = "valField1"
 dummyData["Field2"] = "valField2"
 dummyData["InnerStruct.SubField1"] = "SubFieldVal1"
-dummyData["InnerStruct.SubField2"] = "SubFieldVal2"
+dummyData["InnerStruct.SubField2.SubSubField1"] = "SubSubFieldVal1"
 
 // Assign the dummy data to the Struct.
 Struct1.Set(dummyData)
 ```
-
 
 ### License
 
