@@ -3,6 +3,8 @@ package contractor
 import (
 	"fmt"
 	"reflect"
+	"regexp"
+	"strings"
 )
 
 func NewContractorCase(i interface{}) *ContractorCase {
@@ -29,59 +31,92 @@ func (C *ContractorCase) Set(fields map[string]interface{}) {
 			dest := reflect.ValueOf(C.Case)
 
 			for field, val := range fields {
+				var destTempField reflect.Value
 
-				destField := dest.Elem().FieldByName(field)
+				// check if field contains a dot.
+				matchDot, _ := regexp.MatchString("\\.", field)
+				if matchDot == true {
+					parts := strings.Split(field, ".")
+
+					// For now only 1 sublevel.. gotta make this recursive...
+					if len(parts) == 2 {
+						destTempField = dest.Elem().FieldByName(parts[0])
+
+						if destTempField.Type().Kind() == reflect.Struct {
+							sublevel := destTempField.FieldByName(parts[1])
+
+							if sublevel.IsValid() {
+								if sublevel.CanSet() {
+									destTempField = sublevel
+								} else {
+									continue
+								}
+							} else {
+								continue
+							}
+						} else {
+							continue
+						}
+					} else {
+						continue
+					}
+				} else {
+					destTempField = dest.Elem().FieldByName(field)
+				}
+
+				destField := destTempField
 				rval := reflect.ValueOf(val)
 
-				switch destField.Type().Kind() {
-				case reflect.String:
-					destField.SetString(rval.String())
+				if destField.IsValid() {
+					if destField.CanSet() {
 
-				case reflect.Bool:
-					destField.Set(reflect.ValueOf(val))
+						switch destField.Type().Kind() {
+						case reflect.String:
+							destField.SetString(rval.String())
 
-				case reflect.Int, reflect.Int32, reflect.Int64:
+						case reflect.Bool:
+							destField.Set(reflect.ValueOf(val))
 
-					destField.SetInt(reflect.ValueOf(val).Int())
+						case reflect.Int, reflect.Int32, reflect.Int64:
 
-				case reflect.Float32, reflect.Float64:
-					destField.Set(reflect.ValueOf(val))
+							destField.SetInt(reflect.ValueOf(val).Int())
 
-				case reflect.Slice:
+						case reflect.Float32, reflect.Float64:
+							destField.Set(reflect.ValueOf(val))
 
-					switch reflect.ValueOf(val).Type().Kind() {
-					case reflect.Slice:
-						sliceVal := reflect.ValueOf(val)
+						case reflect.Slice:
 
-						if sliceVal.CanInterface() {
-							sliceLen := sliceVal.Len()
+							switch reflect.ValueOf(val).Type().Kind() {
+							case reflect.Slice:
+								sliceVal := reflect.ValueOf(val)
 
-							if sliceLen > 0 {
-								SliceInd := reflect.Indirect(reflect.ValueOf(val))
+								if sliceVal.CanInterface() {
+									sliceLen := sliceVal.Len()
 
-								for i := 0; i < sliceLen; i++ {
-									destField.Set(reflect.Append(destField, reflect.ValueOf(SliceInd.Index(i).Interface())))
+									if sliceLen > 0 {
+										SliceInd := reflect.Indirect(reflect.ValueOf(val))
+
+										for i := 0; i < sliceLen; i++ {
+											destField.Set(reflect.Append(destField, reflect.ValueOf(SliceInd.Index(i).Interface())))
+										}
+									}
 								}
 							}
+						case reflect.Struct, reflect.Ptr:
+
+							switch reflect.ValueOf(val).Type().Kind() {
+							case reflect.Struct:
+								destField.Set(reflect.ValueOf(val))
+							case reflect.Ptr:
+								destField.Set(reflect.ValueOf(val))
+							}
+						default:
+							fmt.Printf("Contractor: unknown kind to set: ` %v ` . please file a request to http://github.com/donseba/contractor \n", destField.Type().Kind())
 						}
 					}
-				case reflect.Struct, reflect.Ptr:
-
-					switch reflect.ValueOf(val).Type().Kind() {
-					case reflect.Struct:
-						destField.Set(reflect.ValueOf(val))
-					case reflect.Ptr:
-						destField.Set(reflect.ValueOf(val))
-					}
-				default:
-					fmt.Println("unknown kind to set: ")
-					fmt.Println(destField.Type().Kind())
 				}
 			}
 		}
-
-	} else {
-		fmt.Println("Cannot set empty values.")
 	}
 }
 
@@ -93,7 +128,7 @@ func (C *ContractorCase) CaseItem(field string) interface{} {
 	t := reflect.TypeOf(C.Case)
 
 	if t.Kind() != reflect.Ptr {
-		fmt.Printf("Contractor CaseItem: Case must be a pointer, but got: %t", C.Case)
+		fmt.Printf("Contractor: `CaseItem` Case must be a pointer, but got: %t", C.Case)
 	}
 
 	dest := reflect.ValueOf(C.Case)

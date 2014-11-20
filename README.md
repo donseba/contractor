@@ -95,6 +95,42 @@ resulting in :
 {"Field1":"valField1","Field2":"valField2"}
 ```
 
+
+### Working with nested structs. ( Since 0.2.0 )
+lets say your structs has a nested struct.
+```go
+package v01
+
+type Struct1 struct {
+	Field1        string
+	Field2        string
+	InnerStruct   struct{
+		SubField1 string
+		SubField2 string
+	}
+}
+```
+
+It is Possible to assign a value to this field by doing the following : 
+
+```go
+Struct1, err := contractSet.Read("Struct1")
+if err != nil {
+  // Do your typical error handling here
+}
+
+// Create some dummy data like
+dummyData := make(map[string]interface{})
+dummyData["Field1"] = "valField1"
+dummyData["Field2"] = "valField2"
+dummyData["InnerStruct.SubField1"] = "SubFieldVal1"
+dummyData["InnerStruct.SubField2"] = "SubFieldVal2"
+
+// Assign the dummy data to the Struct.
+Struct1.Set(dummyData)
+```
+
+
 ### License
 
 This package is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
