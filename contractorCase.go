@@ -7,11 +7,12 @@ import (
 	"strings"
 )
 
+//
 func NewContractorCase(i interface{}) ContractorCase {
-
 	return ContractorCase{i}
 }
 
+//
 type ContractorCase struct {
 	Case interface{}
 }
@@ -36,34 +37,7 @@ func (C *ContractorCase) Set(fields map[string]interface{}) {
 				// check if field contains a dot.
 				matchDot, _ := regexp.MatchString("\\.", field)
 				if matchDot == true {
-					parts := strings.Split(field, ".")
-
-					// For now only 1 sublevel.. gotta make this recursive...
-					if len(parts) == 2 {
-						destTempField = dest.Elem().FieldByName(parts[0])
-
-						if destTempField.IsValid() {
-							if destTempField.Type().Kind() == reflect.Struct {
-								sublevel := destTempField.FieldByName(parts[1])
-
-								if sublevel.IsValid() {
-									if sublevel.CanSet() {
-										destTempField = sublevel
-									} else {
-										continue
-									}
-								} else {
-									continue
-								}
-							} else {
-								continue
-							}
-						} else {
-							continue
-						}
-					} else {
-						continue
-					}
+					destTempField = C.getNestedField(dest, field)
 				} else {
 					destTempField = dest.Elem().FieldByName(field)
 				}
@@ -125,11 +99,13 @@ func (C *ContractorCase) Set(fields map[string]interface{}) {
 	}
 }
 
+//
 func (C *ContractorCase) Get() interface{} {
 	return reflect.ValueOf(C.Case).Interface()
 }
 
-func (C *ContractorCase) CaseItem(field string) interface{} {
+// Get a specific item inside a case.
+func (C *ContractorCase) Item(field string) interface{} {
 	t := reflect.TypeOf(C.Case)
 
 	if t.Kind() != reflect.Ptr {
@@ -140,5 +116,27 @@ func (C *ContractorCase) CaseItem(field string) interface{} {
 	destField := dest.Elem().FieldByName(field)
 
 	return destField.Interface()
+}
 
+// Try to reach the nested struct item value.
+func (C *ContractorCase) getNestedField(dest reflect.Value, field string) reflect.Value {
+	parts := strings.Split(field, ".")
+
+	destTempField := dest.Elem().FieldByName(parts[0])
+
+	for i := 1; i < len(parts); i++ {
+		if destTempField.IsValid() {
+			if destTempField.Type().Kind() == reflect.Struct {
+				sublevel := destTempField.FieldByName(parts[i])
+
+				if sublevel.IsValid() {
+					if sublevel.CanSet() {
+						destTempField = sublevel
+					}
+				}
+			}
+		}
+	}
+
+	return destTempField
 }
