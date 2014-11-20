@@ -111,7 +111,7 @@ type Struct1 struct {
 }
 ```
 
-It is Possible to assign a value to this field by doing the following : 
+It is Possible to assign values to the InnerStruct fields by doing the following : 
 
 ```go
 Struct1, err := contractSet.Read("Struct1")
