@@ -1,12 +1,12 @@
 package contractor
 
-func NewContractorCaseBatch(i []*ContractorCase) *ContractorCaseBatch {
+func NewContractorCaseBatch(i []ContractorCase) ContractorCaseBatch {
 
-	return &ContractorCaseBatch{i}
+	return ContractorCaseBatch{i}
 }
 
 type ContractorCaseBatch struct {
-	Batch []*ContractorCase
+	Batch []ContractorCase
 }
 
 func (C ContractorCaseBatch) Get() []interface{} {

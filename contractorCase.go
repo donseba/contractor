@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-func NewContractorCase(i interface{}) *ContractorCase {
+func NewContractorCase(i interface{}) ContractorCase {
 
-	return &ContractorCase{i}
+	return ContractorCase{i}
 }
 
 type ContractorCase struct {
@@ -42,12 +42,16 @@ func (C *ContractorCase) Set(fields map[string]interface{}) {
 					if len(parts) == 2 {
 						destTempField = dest.Elem().FieldByName(parts[0])
 
-						if destTempField.Type().Kind() == reflect.Struct {
-							sublevel := destTempField.FieldByName(parts[1])
+						if destTempField.IsValid() {
+							if destTempField.Type().Kind() == reflect.Struct {
+								sublevel := destTempField.FieldByName(parts[1])
 
-							if sublevel.IsValid() {
-								if sublevel.CanSet() {
-									destTempField = sublevel
+								if sublevel.IsValid() {
+									if sublevel.CanSet() {
+										destTempField = sublevel
+									} else {
+										continue
+									}
 								} else {
 									continue
 								}
@@ -88,16 +92,17 @@ func (C *ContractorCase) Set(fields map[string]interface{}) {
 
 							switch reflect.ValueOf(val).Type().Kind() {
 							case reflect.Slice:
-								sliceVal := reflect.ValueOf(val)
+								CurVal := reflect.ValueOf(val)
 
-								if sliceVal.CanInterface() {
-									sliceLen := sliceVal.Len()
+								if CurVal.CanInterface() {
+									CurLen := CurVal.Len()
 
-									if sliceLen > 0 {
-										SliceInd := reflect.Indirect(reflect.ValueOf(val))
+									if CurLen > 0 {
+										for i := 0; i < CurLen; i++ {
+											// Since it is an pointer, get the Inderect value.
+											CurSlice := reflect.Indirect(reflect.ValueOf(CurVal.Index(i).Interface()))
 
-										for i := 0; i < sliceLen; i++ {
-											destField.Set(reflect.Append(destField, reflect.ValueOf(SliceInd.Index(i).Interface())))
+											destField.Set(reflect.Append(destField, CurSlice))
 										}
 									}
 								}

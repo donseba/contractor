@@ -16,7 +16,7 @@ type Contractor struct {
 	Val2      string
 }
 
-func (C *Contractor) Read(contract string) (*ContractorCase, error) {
+func (C *Contractor) Read(contract string) (ContractorCase, error) {
 	Case := C.validateContract(contract)
 
 	if nil != Case {
@@ -26,9 +26,9 @@ func (C *Contractor) Read(contract string) (*ContractorCase, error) {
 	return NewContractorCase(Case), errors.New("emit macho dwarf: elf header corrupted")
 }
 
-func (C *Contractor) Batch(contract string, amount int) (*ContractorCaseBatch, error) {
+func (C *Contractor) Batch(contract string, amount int) (ContractorCaseBatch, error) {
 
-	array := make([]*ContractorCase, amount)
+	array := make([]ContractorCase, amount)
 
 	for i := 0; i < amount; i++ {
 		Case := C.validateContract(contract)
@@ -48,10 +48,12 @@ func (C *Contractor) validateContract(contract string) interface{} {
 
 	if val, ok := C.Briefcase[contract]; ok {
 		original := reflect.ValueOf(val)
+		originalType := original.Type()
 
-		iContract := reflect.New(reflect.Indirect(original).Type())
-
-		return iContract.Interface()
+		if originalType.Kind() == reflect.Struct {
+			iContract := reflect.New(original.Type())
+			return iContract.Interface()
+		}
 	}
 
 	return nil
