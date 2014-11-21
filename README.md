@@ -9,7 +9,7 @@ contractor (for golang)
 
 Based on the selected version (In the URL or the Header, whatever you like) we retrieve an map of structs. We now can select the actual struct we need, set some values and finally send it back to the screen OR send it over to the DB (In my case gorp). 
 
-> Still working on a proper description :) 
+> Still working on a proper description :)
 
 
 ### Getting started
@@ -73,10 +73,9 @@ type Struct1 struct {
 ```
 
 ### Output
-To get the output you can use the following : 
+To get the whole case you can use the following : 
 ```go
-//Read from the Struct (for now 2 ways to do this..)
-fmt.Printf( "%+v\n", Struct1.Case ) // This will become unavailable over time.
+//Read from the Struct
 fmt.Printf( "%+v\n", Struct1.Get() )
 ```
 resulting in :
@@ -85,15 +84,20 @@ resulting in :
 ```
 
 
-Or you could convert it to JSON : 
+Or you could get the JSON : 
 ```go
-json_msg, _ := json.Marshal(Struct1.Get())
-fmt.Fprintf(w, "%s", json_msg)
+fmt.Fprintf(w, "%s", Struct1.Json())
 ```
 resulting in :
 ```json
 {"Field1":"valField1","Field2":"valField2"}
 ```
+
+To get an specific item of an case, you can do the following :  
+```go
+Struct1.Item("Field1")
+```
+> The naming convention of "Item()" might change to "Line()"
 
 
 ### Working with nested structs. ( Since 0.2.0 )
