@@ -43,7 +43,7 @@ The second level is the most tricky parts.
 ### Usage
 ```go
 // Get the set of contracts which hold a map of structs assigned to version 01
-contractSet := contractor.NewContract(models.TestContracts["01"])
+contractSet := contractor.NewContractor(models.TestContracts["01"])
 ```
 
 ```go
