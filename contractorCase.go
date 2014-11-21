@@ -1,35 +1,36 @@
 package contractor
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
 )
 
-//
+// Initiate a new Case
 func NewContractorCase(i interface{}) ContractorCase {
 	return ContractorCase{i}
 }
 
-//
+// The Case struct.
 type ContractorCase struct {
-	Case interface{}
+	caseFiles interface{}
 }
 
 // Set the values for the current Case
 func (C *ContractorCase) Set(fields map[string]interface{}) {
 	if len(fields) > 0 {
-		t := reflect.TypeOf(C.Case)
+		t := reflect.TypeOf(C.caseFiles)
 
 		if t.Kind() == reflect.Ptr {
 			t = t.Elem()
 		} else {
-			fmt.Printf("Contractor: Case must be a pointer, but got: %t", C.Case)
+			fmt.Printf("Contractor: Case must be a pointer, but got: %t", C.caseFiles)
 		}
 
 		if t.Kind() == reflect.Struct {
-			dest := reflect.ValueOf(C.Case)
+			dest := reflect.ValueOf(C.caseFiles)
 
 			for field, val := range fields {
 				var destTempField reflect.Value
@@ -56,14 +57,12 @@ func (C *ContractorCase) Set(fields map[string]interface{}) {
 							destField.Set(reflect.ValueOf(val))
 
 						case reflect.Int, reflect.Int32, reflect.Int64:
-
 							destField.SetInt(reflect.ValueOf(val).Int())
 
 						case reflect.Float32, reflect.Float64:
 							destField.Set(reflect.ValueOf(val))
 
 						case reflect.Slice:
-
 							switch reflect.ValueOf(val).Type().Kind() {
 							case reflect.Slice:
 								CurVal := reflect.ValueOf(val)
@@ -76,21 +75,25 @@ func (C *ContractorCase) Set(fields map[string]interface{}) {
 											// Since it is an pointer, get the Inderect value.
 											CurSlice := reflect.Indirect(reflect.ValueOf(CurVal.Index(i).Interface()))
 
+											// Append the slice item to its destination field
 											destField.Set(reflect.Append(destField, CurSlice))
 										}
 									}
 								}
 							}
-						case reflect.Struct, reflect.Ptr:
 
+						case reflect.Struct, reflect.Ptr:
 							switch reflect.ValueOf(val).Type().Kind() {
 							case reflect.Struct:
 								destField.Set(reflect.ValueOf(val))
+
 							case reflect.Ptr:
 								destField.Set(reflect.ValueOf(val))
+
 							}
+
 						default:
-							fmt.Printf("Contractor: unknown kind to set: ` %v ` . please file a request to http://github.com/donseba/contractor \n", destField.Type().Kind())
+							fmt.Printf("Contractor: unknown kind to set: ` %+v ` . please file a request to http://github.com/donseba/contractor \n", destField.Type().Kind())
 						}
 					}
 				}
@@ -99,23 +102,29 @@ func (C *ContractorCase) Set(fields map[string]interface{}) {
 	}
 }
 
-//
+// Get the specific case values.
 func (C *ContractorCase) Get() interface{} {
-	return reflect.ValueOf(C.Case).Interface()
+	return C.caseFiles
 }
 
 // Get a specific item inside a case.
 func (C *ContractorCase) Item(field string) interface{} {
-	t := reflect.TypeOf(C.Case)
+	t := reflect.TypeOf(C.caseFiles)
 
 	if t.Kind() != reflect.Ptr {
-		fmt.Printf("Contractor: `CaseItem` Case must be a pointer, but got: %t", C.Case)
+		fmt.Printf("Contractor: `CaseItem` Case must be a pointer, but got: %t", C.caseFiles)
 	}
 
-	dest := reflect.ValueOf(C.Case)
+	dest := reflect.ValueOf(C.caseFiles)
 	destField := dest.Elem().FieldByName(field)
 
 	return destField.Interface()
+}
+
+// Get the Json of an specific casefile
+func (C ContractorCase) Json() []byte {
+	jsonm, _ := json.Marshal(C.Get())
+	return jsonm
 }
 
 // Try to reach the nested struct item value.
